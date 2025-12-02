@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    android:backgroundTint="@color/color_card">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:gravity="center_vertical">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvScoreLabel"
+                style="@style/TextAppearance.App.ScoreLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/score_label" />
+
+            <TextView
+                android:id="@+id/tvScore"
+                style="@style/TextAppearance.App.ScoreValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/zero" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp">
+
+            <TextView
+                android:id="@+id/tvBestLabel"
+                style="@style/TextAppearance.App.ScoreLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/best_label" />
+
+            <TextView
+                android:id="@+id/tvBest"
+                style="@style/TextAppearance.App.ScoreValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/zero" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvMovesLabel"
+                style="@style/TextAppearance.App.ScoreLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/moves_label" />
+
+            <TextView
+                android:id="@+id/tvMoves"
+                style="@style/TextAppearance.App.ScoreValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/zero" />
+
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/btnShowLast"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@android:drawable/ic_menu_recent_history"
+            app:tint="@color/white"
+            android:backgroundTint="@color/color_primary"
+            android:contentDescription="@string/action_show_last"
+            android:layout_marginStart="8dp" />
+
+        <ImageButton
+            android:id="@+id/btnRestart"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:src="@android:drawable/ic_menu_rotate"
+            app:tint="@color/white"
+            android:backgroundTint="@color/color_primary"
+            android:contentDescription="@string/action_restart"
+            android:layout_marginStart="8dp" />
+
+        <Button
+            android:id="@+id/btnUndo"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="@string/action_undo"
+            android:layout_marginStart="8dp" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

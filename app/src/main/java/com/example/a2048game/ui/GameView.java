@@ -1,5 +1,6 @@
 package com.example.a2048game.ui;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -17,6 +18,9 @@ import androidx.annotation.Nullable;
 import com.example.a2048game.logic.Direction;
 import com.example.a2048game.logic.GameManager;
 import com.example.a2048game.model.Board;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class GameView extends View {
 
@@ -44,6 +48,11 @@ public class GameView extends View {
     private int gridSize;
     private int padding;
     private int gap;
+
+    // Animation helpers
+    private int[][] prevBoard = null;
+    private float[][] scaleFactors = null;
+    private Map<Integer, ValueAnimator> animators = new HashMap<>();
 
     public GameView(Context context) {
         super(context);
@@ -135,6 +144,10 @@ public class GameView extends View {
 
     public void setGameManager(GameManager gm) {
         this.gameManager = gm;
+        // init prevBoard and scaleFactors sizes
+        prevBoard = new int[Board.SIZE][Board.SIZE];
+        scaleFactors = new float[Board.SIZE][Board.SIZE];
+        for (int r = 0; r < Board.SIZE; r++) for (int c = 0; c < Board.SIZE; c++) scaleFactors[r][c] = 1f;
         invalidate();
     }
 
@@ -156,6 +169,41 @@ public class GameView extends View {
             Paint.FontMetrics fm = textPaint.getFontMetrics();
             float textOffset = (fm.descent + fm.ascent) / 2f;
             float corner = cellSize * 0.12f;
+
+            // Compare board and start animations for cells that increased
+            for (int r = 0; r < Board.SIZE; r++) {
+                for (int c = 0; c < Board.SIZE; c++) {
+                    int curr = b.getValue(r, c);
+                    int prev = prevBoard != null ? prevBoard[r][c] : 0;
+                    if (curr > prev) {
+                        // start pop animation for this cell
+                        final int rr = r;
+                        final int cc = c;
+                        final int key = rr * 10 + cc;
+                        if (!animators.containsKey(key)) {
+                            scaleFactors[rr][cc] = 1.4f; // initial pop scale
+                            ValueAnimator va = ValueAnimator.ofFloat(1.4f, 1f);
+                            va.setDuration(180);
+                            va.addUpdateListener(animation -> {
+                                float v = (float) animation.getAnimatedValue();
+                                scaleFactors[rr][cc] = v;
+                                invalidate();
+                            });
+                            va.start();
+                            animators.put(key, va);
+                            // remove when finished
+                            va.addListener(new android.animation.AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationEnd(android.animation.Animator animation) {
+                                    animators.remove(key);
+                                    scaleFactors[rr][cc] = 1f;
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+
             for (int r = 0; r < Board.SIZE; r++) {
                 for (int c = 0; c < Board.SIZE; c++) {
                     int x = gridLeft + gap + c * (cellSize + gap);
@@ -169,9 +217,20 @@ public class GameView extends View {
                     }
                     if (value != 0) {
                         tilePaint.setColor(getColorForValue(value));
-                        canvas.drawRoundRect(cellRect, corner, corner, tilePaint);
-                        textPaint.setColor(getTextColorForValue(value));
-                        canvas.drawText(String.valueOf(value), cellRect.centerX(), cellRect.centerY() - textOffset, textPaint);
+                        // apply scale if active
+                        float scale = (scaleFactors != null) ? scaleFactors[r][c] : 1f;
+                        if (scale != 1f) {
+                            int save = canvas.save();
+                            canvas.scale(scale, scale, cellRect.centerX(), cellRect.centerY());
+                            canvas.drawRoundRect(cellRect, corner, corner, tilePaint);
+                            textPaint.setColor(getTextColorForValue(value));
+                            canvas.drawText(String.valueOf(value), cellRect.centerX(), cellRect.centerY() - textOffset, textPaint);
+                            canvas.restoreToCount(save);
+                        } else {
+                            canvas.drawRoundRect(cellRect, corner, corner, tilePaint);
+                            textPaint.setColor(getTextColorForValue(value));
+                            canvas.drawText(String.valueOf(value), cellRect.centerX(), cellRect.centerY() - textOffset, textPaint);
+                        }
                     }
                 }
             }
@@ -182,6 +241,11 @@ public class GameView extends View {
                 textPaint.setColor(getTextColorForValue(dragValue));
                 canvas.drawText(String.valueOf(dragValue), dragRect.centerX(), dragRect.centerY() - textOffset, textPaint);
             }
+
+            // copy current board into prevBoard
+            if (prevBoard == null) prevBoard = new int[Board.SIZE][Board.SIZE];
+            for (int r = 0; r < Board.SIZE; r++) for (int c = 0; c < Board.SIZE; c++) prevBoard[r][c] = b.getValue(r, c);
+
         } catch (Exception e) {
             Log.e(TAG, "Error en onDraw", e);
         }
@@ -269,5 +333,15 @@ public class GameView extends View {
     @Override
     public boolean performClick() {
         return super.performClick();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        // cancel animators
+        for (ValueAnimator va : animators.values()) {
+            try { va.cancel(); } catch (Exception ignored) {}
+        }
+        animators.clear();
     }
 }

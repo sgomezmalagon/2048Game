@@ -7,4 +7,16 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- New professional 2048 palette -->
+    <color name="color_bg">#FFFAF8EF</color>
+    <color name="color_primary">#FF2E7D32</color>
+    <color name="color_primary_variant">#FF1B5E20</color>
+    <color name="color_surface">#FFFFFFFF</color>
+    <color name="color_card">#FFF2EFE7</color>
+    <color name="color_grid_bg">#FFBBADA0</color>
+    <color name="color_cell_bg">#FFCDC1B4</color>
+    <color name="color_tile_text_dark">#FF776E65</color>
+    <color name="color_tile_text_light">#FFF9F6F2</color>
+    <color name="color_accent">#FFFFC107</color>
 </resources>
